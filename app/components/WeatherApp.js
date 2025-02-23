@@ -25,56 +25,71 @@ function WeatherApp() {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     dispatch(setCity(inputCity));
+    setInputCity('')
   };
 
-  if (loading) return <p>Fetching weather data for {city}...</p>;
-  if (error) return <p>Failed to fetch weather data for {city} {error}</p>;
+  if (loading) return <p className="loading">Fetching weather data for {city}...</p>;
+  if (error) return <p className="error">Failed to fetch weather data for {city} {error}</p>;
 
-  const temperatureData = weatherData
-    ? weatherData.list.map((item) => (item.main.temp - 273.15) * (9 / 5) + 32)
-    : []; // Convert to Fahrenheit
+   const temperatureData = weatherData
+     ? weatherData.list.map((item) => {
+        console.log(item)
+         const celsius = item.main.temp
+         const fahrenheit = (celsius * (9 / 5) + 32); // Convert Celsius to Fahrenheit
+         
+         return fahrenheit
+       })
+     : [];
   const pressureData = weatherData
     ? weatherData.list.map((item) => item.main.pressure)
     : [];
   const humidityData = weatherData
     ? weatherData.list.map((item) => item.main.humidity)
     : [];
-
+    
   return (
-    <div>
-      <form onSubmit={handleFormSubmit}>
+    <>
+      <h1 className="heading">Weather Data</h1>
+      <form className="form" onSubmit={handleFormSubmit}>
         <input
           type="text"
           value={inputCity}
           onChange={handleInputChange}
           placeholder="Enter City"
         />
-        <button type="submit">Get Weather</button>
+        <button className="btn" type="submit">
+          Get Weather
+        </button>
       </form>
 
       {weatherData && (
         <>
-          <WeatherChart
-            data={temperatureData}
-            title="Temperature"
-            units="°F"
-            color="red"
-          />
-          <WeatherChart
-            data={pressureData}
-            title="Pressure"
-            units="hPa"
-            color="blue"
-          />
-          <WeatherChart
-            data={humidityData}
-            title="Humidity"
-            units="%"
-            color="green"
-          />
+          <div className="content">
+            <div className="chartsDiv">
+              <WeatherChart
+                data={temperatureData}
+                title="Temperature"
+                units="°F"
+                color="red"
+              />
+
+              <WeatherChart
+                data={pressureData}
+                title="Pressure"
+                units="hPa"
+                color="blue"
+              />
+              <WeatherChart
+                data={humidityData}
+                title="Humidity"
+                units="%"
+                color="green"
+              />
+            </div>
+          </div>
         </>
       )}
-    </div>
+    </>
   );
 }
 
